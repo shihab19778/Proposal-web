@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>You're My Everything!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;600;700&Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-pink: #ff69b4;
+            --deep-pink: #ff1493;
+            --light-pink: #ffc0cb;
+            --dark-gray: #4a4a4a;
+            --darker-gray: #2a2a2a;
+            --bg-start: #0f0f0f;
+            --bg-mid: #1a1a1a;
+            --bg-end: #222222;
+            --text-light: #f0f0f0;
+            --text-white: #fff;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --blur-strength: 15px;
+            --border-radius-lg: 20px;
+            --border-radius-md: 15px;
+            --shadow-pink-soft: 0 0 30px rgba(255, 105, 180, 0.4);
+            --shadow-pink-strong: 0 0 60px rgba(255, 20, 147, 0.2);
+            --shadow-dark: 0 0 15px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+            background-size: 400% 400%;
+            animation: bgGradient 30s ease infinite;
+            color: var(--text-light);
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ff69b4" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') 12 12, auto;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength));
+            padding: 8px 15px;
+            border-radius: var(--border-radius-md);
+            z-index: 1000;
+            box-shadow: var(--shadow-pink-soft);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            pointer-events: auto;
+        }
+
+        .nav-btn:hover {
+            color: var(--primary-pink);
+            transform: scale(1.1);
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-mid));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-heart {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-pink);
+            transform: rotate(45deg);
+            animation: pulse-heart 1.5s ease-in-out infinite;
+            position: relative;
+        }
+
+        .loading-heart::before,
+        .loading-heart::after {
+            content: "";
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-pink);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .loading-heart::before {
+            top: -20px;
+            left: 0;
+        }
+
+        .loading-heart::after {
+            top: 0;
+            left: -20px;
+        }
+
+        @keyframes pulse-heart {
+            0% { transform: rotate(45deg) scale(1); }
+            50% { transform: rotate(45deg) scale(1.2); }
+            100% { transform: rotate(45deg) scale(1); }
+        }
+
+        .sad-notice {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(var(--blur-strength));
+            padding: 20px 30px;
+            border-radius: var(--border-radius-lg);
+            text-align: center;
+            color: #888;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            box-shadow: var(--shadow-dark);
+            max-width: 90%;
+            z-index: 50;
+            pointer-events: auto;
+        }
+
+        .sad-notice.hidden {
+            opacity: 0;
+            transform: translate(-50%, -60%);
+            pointer-events: none;
+        }
+
+        .sad-notice button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--dark-gray);
+            color: var(--text-white);
+            border: none;
+            border-radius: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .sad-notice button:hover {
+            background-color: var(--darker-gray);
+            transform: translateY(-2px);
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.7);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .sad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 15;
+        }
+
+        .sad-overlay.active {
+            opacity: 1;
+        }
+
+        @keyframes bgGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+
+        .heart {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: var(--primary-pink);
+            transform: rotate(45deg);
+            animation: float 8s linear infinite;
+            opacity: 0;
+            box-shadow: 0 0 5px var(--primary-pink);
+        }
+
+        .heart.sad {
+            animation-duration: 10s;
+            background-color: #888;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: inherit;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            top: -7.5px;
+            left: 0;
+        }
+
+        .heart::after {
+            top: 0;
+            left: -7.5px;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(45deg) scale(0.5);
+                opacity: 0;
+            }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% {
+                transform: translateY(-10vh) rotate(45deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .heart:nth-child(2n) { animation-duration: 7s; animation-delay: 1s; background-color: var(--deep-pink); }
+        .heart:nth-child(3n) { animation-duration: 9s; animation-delay: 2s; transform: rotate(30deg) scale(0.8); background-color: var(--light-pink); }
+        .heart:nth-child(5n) { animation-duration: 6s; animation-delay: 0.5s; transform: rotate(60deg) scale(1.1); }
+        .heart:nth-child(7n) { animation-duration: 8.5s; animation-delay: 1.5s; transform: rotate(20deg) scale(0.9); background-color: #ff80a0; }
+
+        .text-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 20px;
+            z-index: 20;
+            width: 90%;
+            max-width: 800px;
+            display: none;
+        }
+
+        .text-container.visible {
+            display: block;
+        }
+
+        .main-text {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3rem;
+            background: var(--glass-bg);
+            padding: 15px 30px;
+            border-radius: var(--border-radius-lg);
+            backdrop-filter: blur(var(--blur-strength));
+            box-shadow: var(--shadow-pink-soft), var(--shadow-pink-strong);
+            color: var(--text-white);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .main-text:hover {
+            color: #ffecf2;
+            text-shadow: 0 0 15px var(--primary-pink), 0 0 30px var(--deep-pink);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5), 0 0 30px rgba(147, 112, 219, 0.3), 0 0 40px rgba(0, 191, 255, 0.2);
+        }
+
+        .decision-text-container {
+            margin-bottom: 25px;
+            z-index: 25;
+        }
+
+        .decision-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-white);
+            background: var(--glass-bg);
+            padding: 12px 24px;
+            border-radius: var(--border-radius-md);
+            backdrop-filter: blur(var(--blur-strength));
+            box-shadow: var(--shadow-pink-soft);
+            display: none;
+        }
+
+        .decision-text.visible {
+            display: block;
+        }
+
+        .decision-text:hover {
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5), 0 0 30px rgba(147, 112, 219, 0.3), 0 0 40px rgba(0, 191, 255, 0.2);
+        }
+
+        .connect-me {
+            position: fixed;
+            bottom: 60px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength));
+            padding: 6px 10px;
+            border-radius: var(--border-radius-md);
+            z-index: 21;
+            box-shadow: var(--shadow-pink-soft);
+            pointer-events: auto;
+        }
+
+        .social-btn {
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 4px;
+            pointer-events: auto;
+        }
+
+        .social-btn:hover {
+            color: var(--primary-pink);
+            transform: scale(1.2);
+        }
+
+        .social-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-white);
+            transition: fill 0.3s ease;
+        }
+
+        .social-btn:hover svg {
+            fill: var(--primary-pink);
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-strength));
+            padding: 8px 15px;
+            border-radius: var(--border-radius-md);
+            font-size: 0.9rem;
+            color: #e0e0e0;
+            z-index: 20;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer:hover {
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5), 0 0 30px rgba(147, 112, 219, 0.3), 0 0 40px rgba(0, 191, 255, 0.2);
+        }
+
+        .footer span {
+            color: var(--primary-pink);
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+        }
+
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            z-index: 30;
+            pointer-events: auto;
+        }
+
+        .action-button {
+            padding: 15px 35px;
+            color: var(--text-white);
+            border: none;
+            border-radius: 30px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 20, 147, 0.5);
+            transition: all 0.4s ease;
+            letter-spacing: 1.5px;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto;
+            z-index: 30;
+        }
+
+        .action-button:hover {
+            transform: scale(1.05) translateY(-3px);
+        }
+
+        .action-button:active {
+            transform: scale(0.98);
+        }
+
+        .action-button .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            animation: ripple-effect 0.6s linear forwards;
+            transform: scale(0);
+            pointer-events: none;
+        }
+
+        @keyframes ripple-effect {
+            from {
+                transform: scale(0);
+                opacity: 1;
+            }
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        #loveButton {
+            background-color: var(--deep-pink);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 20px rgba(255, 20, 147, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 20, 147, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(255, 20, 147, 0.5); }
+        }
+
+        #loveButton:hover {
+            background-color: #ff007f;
+            box-shadow: 0 8px 25px rgba(255, 0, 127, 0.6);
+        }
+
+        #rejectButton {
+            background-color: var(--dark-gray);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        #rejectButton:hover {
+            background-color: var(--darker-gray);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            z-index: 20;
+        }
+
+        .progress {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-pink), var(--deep-pink));
+            transition: width 0.5s ease;
+        }
+
+        .swal2-popup {
+            background: linear-gradient(135deg, #1c1c1c, #2a2a2a);
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 60px rgba(255, 105, 180, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 1000;
+        }
+
+        .swal2-info-popup {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .swal2-title {
+            color: var(--light-pink);
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .swal2-html-container {
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .swal2-styled.swal2-confirm {
+            background-color: var(--primary-pink) !important;
+            color: var(--text-white) !important;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 25px !important;
+            padding: 10px 25px !important;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            z-index: 1001;
+        }
+
+        .swal2-styled.swal2-confirm:hover {
+            background-color: var(--deep-pink) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 20, 147, 0.6);
+        }
+
+        .swal2-styled.swal2-cancel {
+            background-color: var(--dark-gray) !important;
+            color: var(--text-white) !important;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 25px !important;
+            padding: 10px 25px !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            z-index: 1001;
+        }
+
+        .swal2-styled.swal2-cancel:hover {
+            background-color: var(--darker-gray) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .swal2-close {
+            color: var(--light-pink) !important;
+            font-size: 1.5rem !important;
+            transition: color 0.3s ease;
+            pointer-events: auto;
+            z-index: 1001;
+        }
+
+        .swal2-close:hover {
+            color: var(--primary-pink) !important;
+        }
+
+        .swal2-love-popup {
+            background: linear-gradient(135deg, #2a0000, #4a0000);
+            box-shadow: 0 10px 40px rgba(255, 0, 127, 0.6), 0 0 80px rgba(255, 105, 180, 0.4);
+            z-index: 1000;
+        }
+
+        .swal2-love-title {
+            color: #ffecf2 !important;
+            text-shadow: 0 0 15px var(--primary-pink), 0 0 30px var(--deep-pink) !important;
+        }
+
+        .swal2-love-html-container {
+            color: var(--text-white) !important;
+        }
+
+        .swal2-love-confirm {
+            background-color: var(--primary-pink) !important;
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.6) !important;
+            pointer-events: auto;
+            z-index: 1001;
+        }
+
+        .swal2-love-confirm:hover {
+            background-color: var(--deep-pink) !important;
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.8) !important;
+        }
+
+        .swal2-reject-popup {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .swal2-reject-title {
+            color: #aaa !important;
+            font-family: 'Permanent Marker', cursive !important;
+            font-size: 2rem !important;
+        }
+
+        .swal2-reject-html-container {
+            color: #888 !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-size: 1rem !important;
+        }
+
+        .swal2-reject-confirm {
+            background-color: #333 !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+            pointer-events: auto;
+            z-index: 1001;
+        }
+
+        .swal2-reject-confirm:hover {
+            background-color: #000 !important;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .share-btn, .download-btn {
+            background-color: var(--primary-pink);
+            color: var(--text-white);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            z-index: 1001;
+        }
+
+        .share-btn:hover, .download-btn:hover {
+            background-color: var(--deep-pink);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .main-text {
+                font-size: 2.2rem;
+                padding: 12px 25px;
+            }
+            .decision-text {
+                font-size: 1.2rem;
+                padding: 10px 20px;
+            }
+            .action-button {
+                padding: 12px 30px;
+                font-size: 1.1rem;
+            }
+            .swal2-title {
+                font-size: 1.6rem;
+            }
+            .swal2-html-container {
+                font-size: 0.95rem;
+            }
+            .swal2-reject-title {
+                font-size: 1.5rem !important;
+            }
+            .swal2-reject-html-container {
+                font-size: 0.9rem !important;
+            }
+            .progress-bar {
+                width: 70%;
+            }
+            .sad-notice {
+                font-size: 1.1rem;
+                padding: 15px 20px;
+            }
+            .navbar {
+                padding: 6px 12px;
+            }
+            .nav-btn {
+                font-size: 1rem;
+            }
+            .connect-me {
+                padding: 5px 8px;
+            }
+            .social-btn {
+                font-size: 0.9rem;
+            }
+            .social-btn svg {
+                width: 16px;
+                height: 16px;
+            }
+            .footer {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-text {
+                font-size: 1.6rem;
+                padding: 10px 20px;
+            }
+            .decision-text {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+            .action-button {
+                padding: 10px 25px;
+                font-size: 1rem;
+            }
+            .button-container {
+                gap: 15px;
+            }
+            .swal2-title {
+                font-size: 1.4rem;
+            }
+            .swal2-html-container {
+                font-size: 0.85rem;
+            }
+            .swal2-reject-title {
+                font-size: 1.3rem !important;
+            }
+            .swal2-reject-html-container {
+                font-size: 0.8rem !important;
+            }
+            .progress-bar {
+                width: 80%;
+            }
+            .sad-notice {
+                font-size: 0.9rem;
+                padding: 10px 15px;
+            }
+            .navbar {
+                padding: 5px 10px;
+            }
+            .nav-btn {
+                font-size: 0.9rem;
+            }
+            .connect-me {
+                padding: 4px 6px;
+            }
+            .social-btn {
+                font-size: 0.8rem;
+            }
+            .social-btn svg {
+                width: 14px;
+                height: 14px;
+            }
+            .footer {
+                padding: 5px 10px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar" id="navbar">
+        <button id="homeBtn" class="nav-btn" title="Home">🏠</button>
+        <button id="refreshBtn" class="nav-btn" title="Refresh">🔄</button>
+        <button id="musicToggle" class="nav-btn muted" title="Toggle Music"></button>
+    </div>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-heart"></div>
+    </div>
+    <div id="particles-js"></div>
+    <div class="hearts"></div>
+    <div class="sad-overlay" id="sadOverlay"></div>
+    <div class="sad-notice" id="sadNotice">
+        <p>This website was created for someone special, but she rejected me. 😔<br>So, it’s no longer of any use.</p>
+        <button id="seeAnywayBtn">See Anyway</button>
+    </div>
+    <div class="text-container" id="textContainer">
+        <p id="text1" class="main-text" tabindex="0"></p>
+        <div class="decision-text-container" id="decisionTextContainer">
+            <p class="decision-text">Decide carefully before answering!<br>ডিসিশনটা ভেবে উত্তর দিও</p>
+        </div>
+        <div id="buttonContainer" class="button-container"></div>
+    </div>
+    <div class="connect-me" id="connectMe">
+        <button class="social-btn" id="fbBtn" title="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3V2z"/></svg>
+        </button>
+        <button class="social-btn" id="instaBtn" title="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.326 3.608 1.301.975.975 1.24 2.242 1.301 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.326 2.633-1.301 3.608-.975.975-2.242 1.24-3.608 1.301-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.326-3.608-1.301-.975-.975-1.24-2.242-1.301-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.326-2.633 1.301-3.608.975-.975 2.242-1.24 3.608-1.301 1.266-.058 1.646-.07 4.85-.07zM12 0C8.741 0 8.332.014 7.052.072 5.775.13 4.302.396 3.104 1.594 1.906 2.792 1.64 4.265 1.582 5.542 1.524 6.822 1.51 7.231 1.51 12s.014 5.178.072 6.458c.058 1.277.324 2.75 1.522 3.948 1.198 1.198 2.671 1.464 3.948 1.522 1.28.058 1.689.072 6.458.072s5.178-.014 6.458-.072c1.277-.058 2.75-.324 3.948-1.522 1.198-1.198 1.464-2.671 1.522-3.948.058-1.28.072-1.689.072-6.458s-.014-5.178-.072-6.458c-.058-1.277-.324-2.75-1.522-3.948C21.648 1.396 20.175 1.13 18.898 1.072 17.618 1.014 17.209 1 12 1zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>
+        </button>
+    </div>
+    <div class="footer">
+        <p>Created by <span>SHIHAB</span></p>
+    </div>
+    <div id="progressBar" class="progress-bar"><div class="progress"></div></div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+        Your browser does not support the audio element. Please ensure audio is enabled.
+    </audio>
+    <audio id="sadSound">
+        <source src="https://cdn.pixabay.com/audio/2023/08/10/audio_9e8e1f9e1d.mp3" type="audio/mpeg">
+        Sad sound not available.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM fully loaded');
+            const jsConfetti = typeof JSConfetti !== 'undefined' ? new JSConfetti() : { addConfetti: () => console.warn('JSConfetti not loaded') };
+
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 50 },
+                    shape: { type: 'circle' },
+                    color: { value: ['#ff69b4', '#ff1493', '#ffc0cb'] },
+                    opacity: { value: 0.6, random: true },
+                    size: { value: 5, random: true },
+                    move: { speed: 2, direction: 'top', out_mode: 'out' },
+                    interactivity: {
+                        events: { onhover: { enable: true, mode: 'repel' }, onclick: { enable: true, mode: 'push' } },
+                        modes: { repel: { distance: 100 }, push: { quantity: 2 } }
+                    }
+                }
+            });
+
+            const loadingScreen = document.getElementById('loadingScreen');
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    document.getElementById('sadNotice').style.display = 'block';
+                }, 500);
+            }, 2000);
+
+            const musicToggle = document.getElementById('musicToggle');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const homeBtn = document.getElementById('homeBtn');
+            const fbBtn = document.getElementById('fbBtn');
+            const instaBtn = document.getElementById('instaBtn');
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            const sadSound = document.getElementById('sadSound');
+
+            function updateMusicIcon() {
+                musicToggle.innerHTML = backgroundMusic.paused ? '🔇' : '🔊';
+            }
+
+            function playMusicOnInteraction() {
+                console.log('Attempting to play music on interaction');
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play().then(() => {
+                        console.log('Background music playing');
+                        musicToggle.classList.remove('muted');
+                        updateMusicIcon();
+                    }).catch(e => console.error("Audio play failed:", e));
+                }
+            }
+
+            musicToggle.addEventListener('click', () => {
+                console.log('Music toggle clicked');
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play().then(() => {
+                        console.log('Background music playing');
+                        musicToggle.classList.remove('muted');
+                        updateMusicIcon();
+                    }).catch(e => console.error("Audio play failed:", e));
+                } else {
+                    backgroundMusic.pause();
+                    console.log('Background music paused');
+                    musicToggle.classList.add('muted');
+                    updateMusicIcon();
+                }
+            });
+
+            refreshBtn.addEventListener('click', () => {
+                console.log('Refresh button clicked');
+                location.reload();
+            });
+
+            homeBtn.addEventListener('click', () => {
+                console.log('Home button clicked');
+                location.reload(); // For now, same as refresh; can be extended later
+            });
+
+            fbBtn.addEventListener('click', () => {
+                console.log('Facebook button clicked');
+                window.open('https://www.facebook.com/ISTIYAK.AHMED.SHIHAB/', '_blank');
+            });
+
+            instaBtn.addEventListener('click', () => {
+                console.log('Instagram button clicked');
+                window.open('https://www.instagram.com/istiyak_ahmed_shihab_/', '_blank');
+            });
+
+            document.addEventListener('click', playMusicOnInteraction, { once: true });
+            document.addEventListener('keydown', playMusicOnInteraction, { once: true });
+
+            const seeAnywayBtn = document.getElementById('seeAnywayBtn');
+            const sadNotice = document.getElementById('sadNotice');
+            const textContainer = document.getElementById('textContainer');
+            seeAnywayBtn.addEventListener('click', () => {
+                console.log('See Anyway button clicked');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'A Note Before You Proceed',
+                        html: 'This website was made for someone special, but she rejected me. So, the names have been changed to A and B as an example.',
+                        icon: 'info',
+                        confirmButtonText: 'See Website',
+                        customClass: {
+                            popup: 'swal2-info-popup',
+                            title: 'swal2-reject-title',
+                            htmlContainer: 'swal2-reject-html-container',
+                            confirmButton: 'swal2-reject-confirm'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            console.log('See Website confirmed');
+                            sadNotice.classList.add('hidden');
+                            setTimeout(() => {
+                                sadNotice.style.display = 'none';
+                                textContainer.classList.add('visible');
+                                if (Swal.getPopup()) {
+                                    Swal.getPopup().remove();
+                                }
+                                startTyping();
+                            }, 500);
+                        }
+                    });
+                } else {
+                    alert('This website was made for someone special, but she rejected me.');
+                    sadNotice.classList.add('hidden');
+                    setTimeout(() => {
+                        sadNotice.style.display = 'none';
+                        textContainer.classList.add('visible');
+                        startTyping();
+                    }, 500);
+                }
+            });
+
+            function customTypeIt(element, text, speed, callback) {
+                let charIndex = 0;
+                element.textContent = '';
+                element.classList.add('visible');
+
+                function typeChar() {
+                    if (charIndex < text.length) {
+                        element.textContent += text.charAt(charIndex);
+                        charIndex++;
+                        setTimeout(typeChar, speed);
+                    } else if (callback) {
+                        callback();
+                    }
+                }
+                typeChar();
+            }
+
+            const heartContainer = document.querySelector('.hearts');
+            for (let i = 0; i < 30; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                heart.style.animationDelay = (Math.random() * 5) + 's';
+                heart.style.opacity = Math.random() * 0.6 + 0.4;
+                heart.style.transform = `rotate(${Math.random() * 90}deg) scale(${Math.random() * 0.7 + 0.3})`;
+                heartContainer.appendChild(heart);
+            }
+
+            const textElement = document.getElementById('text1');
+            const decisionTextContainer = document.getElementById('decisionTextContainer');
+            const buttonContainer = document.getElementById('buttonContainer');
+            const sadOverlay = document.getElementById('sadOverlay');
+            const progressBar = document.querySelector('.progress');
+            const lines = [
+                "Hi Miss A.....!",
+                "Now I want to say something special to you.",
+                "Please read everything carefully...!",
+                "When I saw you first, you seemed something Special to me.",
+                "As days went by, you got closer to me...!",
+                "Your thoughts always resonate in my mind...!",
+                "Everything about you is interesting to me...!",
+                "I'm nervous, because I never said this to anyone else...!",
+                "I love my Parents more than anything in this world...!",
+                "Now I love you just as much as them...!",
+                "I Love U, SweetHeart.....!",
+                "Please give me one chance to prove it...!"
+            ];
+
+            const typingSpeed = 70;
+            const visibleTime = 3000;
+            let lineIndex = 0;
+
+            function createRipple(event) {
+                console.log('Creating ripple effect');
+                const button = event.currentTarget;
+                const circle = document.createElement('span');
+                const diameter = Math.max(button.clientWidth, button.clientHeight);
+                const radius = diameter / 2;
+
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+                circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+                circle.classList.add('ripple');
+
+                const ripple = button.getElementsByClassName('ripple')[0];
+                if (ripple) {
+                    ripple.remove();
+                }
+
+                button.appendChild(circle);
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                const trail = document.createElement('div');
+                trail.classList.add('heart');
+                trail.style.position = 'absolute';
+                trail.style.left = `${e.clientX}px`;
+                trail.style.top = `${e.clientY}px`;
+                trail.style.opacity = '0.5';
+                trail.style.transform = 'scale(0.5)';
+                document.body.appendChild(trail);
+                setTimeout(() => trail.remove(), 1000);
+            });
+
+            document.addEventListener('click', (e) => {
+                const hearts = document.querySelectorAll('.heart');
+                hearts.forEach(heart => {
+                    const rect = heart.getBoundingClientRect();
+                    const distance = Math.hypot(e.clientX - rect.left, e.clientY - rect.top);
+                    if (distance < 100) {
+                        heart.style.transition = 'transform 0.5s, opacity 0.5s';
+                        heart.style.transform = 'scale(1.5)';
+                        heart.style.opacity = '0';
+                        setTimeout(() => heart.remove(), 500);
+                    }
+                });
+            });
+
+            function updateProgress() {
+                const percentage = (lineIndex / lines.length) * 100;
+                progressBar.style.width = `${percentage}%`;
+            }
+
+            function downloadTemplate() {
+                console.log('Download Template button clicked');
+                const canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 600;
+                const ctx = canvas.getContext('2d');
+
+                const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+                gradient.addColorStop(0, '#ff69b4');
+                gradient.addColorStop(1, '#ff1493');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 800, 600);
+
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(400, 200);
+                ctx.bezierCurveTo(400, 150, 300, 100, 300, 200);
+                ctx.bezierCurveTo(300, 300, 400, 350, 400, 400);
+                ctx.bezierCurveTo(400, 350, 500, 300, 500, 200);
+                ctx.bezierCurveTo(500, 100, 400, 150, 400, 200);
+                ctx.fill();
+
+                ctx.font = '60px "Dancing Script"';
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('We said YES! ❤️', 400, 450);
+                ctx.font = '40px "Dancing Script"';
+                ctx.fillText('A & B, July 28, 2025', 400, 500);
+
+                try {
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL('image/png');
+                    link.download = 'Our_Love_Story.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    console.log('Template downloaded successfully');
+                } catch (e) {
+                    console.error('Download failed:', e);
+                    alert('Failed to download template. Please try again.');
+                }
+            }
+
+            function shareOnX() {
+                console.log('Share on X button clicked');
+                try {
+                    downloadTemplate();
+                    const tweetUrl = 'https://x.com/intent/tweet?text=I%20said%20YES%20to%20my%20sweetheart!%20❤️';
+                    const newWindow = window.open(tweetUrl, '_blank');
+                    if (!newWindow) {
+                        console.error('Failed to open X share window');
+                        alert('Failed to open X. Please allow pop-ups and try again.');
+                    } else {
+                        console.log('X share window opened');
+                    }
+                } catch (e) {
+                    console.error('Share on X failed:', e);
+                    alert('Failed to share on X. Please try again.');
+                }
+            }
+
+            function showButtons() {
+                console.log('Showing buttons');
+                const decisionText = decisionTextContainer.querySelector('.decision-text');
+                decisionText.classList.add('visible');
+                decisionText.style.display = 'block';
+
+                buttonContainer.innerHTML = `
+                    <button id="loveButton" class="action-button">Yes, I will! ❤️</button>
+                    <button id="rejectButton" class="action-button">No, I won't. 💔</button>
+                `;
+
+                const loveButton = document.getElementById('loveButton');
+                const rejectButton = document.getElementById('rejectButton');
+
+                if (loveButton) {
+                    console.log('Love button found, adding event listener');
+                    loveButton.addEventListener('click', (e) => {
+                        console.log('Yes, I will! button clicked');
+                        createRipple(e);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                html: 'You can take your time to think about it.',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: "Yes, I'm sure",
+                                cancelButtonText: 'Cancel',
+                                customClass: {
+                                    popup: 'swal2-popup',
+                                    title: 'swal2-title',
+                                    htmlContainer: 'swal2-html-container',
+                                    confirmButton: 'swal2-confirm',
+                                    cancelButton: 'swal2-cancel'
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    console.log('Yes, I will! confirmed');
+                                    jsConfetti.addConfetti({
+                                        confettiColors: ['#ffc0cb', '#ff69b4', '#ff1493', '#c71585', '#ff007f'],
+                                        emojis: ['❤️', '💖', '💘', '💕'],
+                                        confettiNumber: 150
+                                    });
+                                    Swal.fire({
+                                        title: 'My Sweetheart!',
+                                        html: 'Thank you for giving me this chance. My heart is yours now! ❤️<br><br><strong>Share on X:</strong> Your image has been downloaded. Please attach it to the tweet opened in X.<br><button id="shareBtn" class="share-btn">Share on X</button><button id="downloadBtn" class="download-btn">Download Template</button>',
+                                        icon: 'success',
+                                        confirmButtonText: 'You are welcome!',
+                                        customClass: {
+                                            popup: 'swal2-popup swal2-love-popup',
+                                            title: 'swal2-title swal2-love-title',
+                                            htmlContainer: 'swal2-html-container swal2-love-html-container',
+                                            confirmButton: 'swal2-confirm swal2-love-confirm'
+                                        },
+                                        didOpen: () => {
+                                            const shareBtn = document.getElementById('shareBtn');
+                                            const downloadBtn = document.getElementById('downloadBtn');
+                                            if (shareBtn) {
+                                                console.log('Share button found, adding event listener');
+                                                shareBtn.addEventListener('click', () => {
+                                                    console.log('Share button clicked inside popup');
+                                                    shareOnX();
+                                                });
+                                            } else {
+                                                console.error('Share button not found in popup');
+                                            }
+                                            if (downloadBtn) {
+                                                console.log('Download button found, adding event listener');
+                                                downloadBtn.addEventListener('click', () => {
+                                                    console.log('Download button clicked inside popup');
+                                                    downloadTemplate();
+                                                });
+                                            } else {
+                                                console.error('Download button not found in popup');
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            alert('Are you sure? Take your time to think.');
+                        }
+                    });
+
+                    loveButton.addEventListener('mouseenter', () => {
+                        jsConfetti.addConfetti({ confettiNumber: 10, emojis: ['❤️'] });
+                    });
+                } else {
+                    console.error('Love button not found');
+                }
+
+                if (rejectButton) {
+                    console.log('Reject button found, adding event listener');
+                    rejectButton.addEventListener('click', (e) => {
+                        console.log('No, I won\'t. button clicked');
+                        createRipple(e);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                html: 'You can take your time to think about it.',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: "Yes, I'm sure",
+                                cancelButtonText: 'Cancel',
+                                customClass: {
+                                    popup: 'swal2-popup',
+                                    title: 'swal2-title',
+                                    htmlContainer: 'swal2-html-container',
+                                    confirmButton: 'swal2-confirm',
+                                    cancelButton: 'swal2-cancel'
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    console.log('No, I won\'t. confirmed');
+                                    sadOverlay.classList.add('active');
+                                    document.querySelectorAll('.heart').forEach(heart => heart.classList.add('sad'));
+                                    sadSound.play().catch(e => console.error("Sad sound play failed:", e));
+
+                                    setTimeout(() => {
+                                        sadOverlay.classList.remove('active');
+                                        document.querySelectorAll('.heart').forEach(heart => heart.classList.remove('sad'));
+                                    }, 5000);
+
+                                    Swal.fire({
+                                        title: 'Oh, My Heart... 😔',
+                                        html: 'Okay, you can forget me now, and yes, block me too.',
+                                        icon: 'error',
+                                        confirmButtonText: 'Okay',
+                                        customClass: {
+                                            popup: 'swal2-popup swal2-reject-popup',
+                                            title: 'swal2-reject-title',
+                                            htmlContainer: 'swal2-reject-html-container',
+                                            confirmButton: 'swal2-reject-confirm'
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            alert('Are you sure? Take your time to think.');
+                        }
+                    });
+
+                    rejectButton.addEventListener('mouseenter', () => {
+                        sadOverlay.style.opacity = '0.2';
+                        const heart = document.createElement('div');
+                        heart.classList.add('heart', 'sad');
+                        heart.style.left = '50%';
+                        heart.style.top = '50%';
+                        heartContainer.appendChild(heart);
+                        setTimeout(() => heart.remove(), 2000);
+                    });
+
+                    rejectButton.addEventListener('mouseleave', () => {
+                        sadOverlay.style.opacity = '0';
+                    });
+                } else {
+                    console.error('Reject button not found');
+                }
+            }
+
+            function typeLine(line, callback) {
+                textElement.classList.remove('visible');
+                setTimeout(() => {
+                    customTypeIt(textElement, line, typingSpeed, () => {
+                        setTimeout(() => {
+                            textElement.classList.remove('visible');
+                            setTimeout(callback, 500);
+                        }, visibleTime);
+                    });
+                }, 500);
+                updateProgress();
+            }
+
+            function startTyping() {
+                if (lineIndex < lines.length) {
+                    typeLine(lines[lineIndex], () => {
+                        lineIndex++;
+                        startTyping();
+                    });
+                } else {
+                    textElement.style.display = 'none';
+                    showButtons();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
