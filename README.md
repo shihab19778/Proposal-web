@@ -1,4 +1,4 @@
-### Modern and Beautiful GitHub README Text for Your Website
+### Modern and Beautiful Proposal Web
 
 Below is a modern, professional, and visually appealing GitHub README text for your website, tailored to reflect its romantic theme, interactive features, and the provided live link (`https://special-thing-shihab.netlify.app/`). The README is designed to be concise, engaging, and informative, with a clean structure that highlights the project's purpose, features, and setup instructions. It uses Markdown for GitHub compatibility and includes emojis for a friendly, modern touch.
 
